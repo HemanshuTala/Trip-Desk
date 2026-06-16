@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rust: #D55D27;
+  --yellow: #FFFE00;
+  --ink: #1C1B1A;
+  --olive: #45471D;
+  --sand: #D1B788;
+  --cream: #FFFBF5;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--ink);
+}
