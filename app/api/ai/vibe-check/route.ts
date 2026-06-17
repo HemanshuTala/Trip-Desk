@@ -64,27 +64,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ rating, reason, isMock: true })
     }
 
-    const prompt = `Assess if this traveller is a good fit for Nomichi's slow, offbeat, small-group journeys.
+    const prompt = `Evaluate if this traveller is a good fit for Nomichi's slow, offbeat, small-group format.
 
-Traveller details:
+Traveller Details:
 - Trip: "${tripName}" in ${tripDestination}
 - Group Type: ${groupType}
 - Preferred Month: ${preferredMonth}
 - What they hope the trip feels like: "${vibeDescription}"
 
+Classification Criteria:
+- "Fit": The traveler explicitly mentions disconnecting, local foods/homestays, slow pace, nature, quietness, bucket-list avoidance, or intimate groups.
+- "Requires Call": The traveler mentions fast-paced sightseeing, checklist travel, commercial tourist traps, high-end commercial resorts, heavy clubbing/nightlife, or rigid tour guides.
+- "Neutral": Basic interest statements, couples holidays, or general simple comments without specific pacing or cultural preferences.
+
 Guidelines:
 - Return a rating: "Fit", "Neutral", or "Requires Call"
-- Provide a one-line reason (under 25 words) justifying the rating
-- Do NOT reject automatically; just provide a suggestion
-- Write the reason in Nomichi's voice: warm, honest, specific, still
-- Never use exclamation marks
-- Never use em-dashes
-- Never use AI-isms like "unlock", "elevate", or "embark"
+- Provide a concise one-line explanation (under 25 words) in Nomichi's voice.
+- Speak directly and objectively about their alignment.
+- Never use exclamation marks.
+- Never use em-dashes.
+- Never use AI-isms like "unlock", "elevate", "discover", or "embark".
 
 Return ONLY a JSON object with this exact structure:
 {
   "rating": "Fit" | "Neutral" | "Requires Call",
-  "reason": "your one-line reason here"
+  "reason": "your one-line explanation here"
 }`
 
     const completion = await aiClient.chat.completions.create({

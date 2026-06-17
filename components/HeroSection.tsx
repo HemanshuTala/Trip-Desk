@@ -83,27 +83,24 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.85, delay: 0.2 }}
-              className="text-[72px] md:text-[100px] font-display font-bold text-cream leading-[0.95] tracking-tight mb-8"
+              className="text-[38px] sm:text-[60px] md:text-[80px] lg:text-[95px] font-display font-bold text-cream leading-[1.0] tracking-tight mb-8"
             >
-              Travel<br />
-              that{' '}
-              <span className="relative inline-block">
-                <span className="text-sand italic">
-                  <TypeAnimation
-                    sequence={[
-                      'finds you.', 3200,
-                      'slows down.', 2400,
-                      'feels real.', 2400,
-                      'stays with you.', 2800,
-                      'finds you.', 0,
-                    ]}
-                    wrapper="span"
-                    speed={45}
-                    deletionSpeed={65}
-                    repeat={Infinity}
-                    cursor
-                  />
-                </span>
+              Travel that<br />
+              <span className="text-sand italic whitespace-nowrap inline-block">
+                <TypeAnimation
+                  sequence={[
+                    'finds you.', 3200,
+                    'slows down.', 2400,
+                    'feels real.', 2400,
+                    'stays with you.', 2800,
+                    'finds you.', 0,
+                  ]}
+                  wrapper="span"
+                  speed={45}
+                  deletionSpeed={65}
+                  repeat={Infinity}
+                  cursor
+                />
               </span>
             </motion.h1>
 
@@ -190,7 +187,7 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.8 + i * 0.08 }}
               className="text-center md:text-left border-r border-cream/10 last:border-r-0 pr-4 last:pr-0"
             >
-              <span className="block text-2xl font-display font-bold text-sand">{s.val}</span>
+              <span className="block text-2xl font-sans font-bold text-sand tracking-tight">{s.val}</span>
               <span className="block text-[9px] uppercase tracking-wider text-cream/40 font-sans font-semibold mt-0.5">{s.label}</span>
             </motion.div>
           ))}
