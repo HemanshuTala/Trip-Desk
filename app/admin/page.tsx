@@ -24,7 +24,8 @@ async function getLeads(
       .order('created_at', { ascending: false })
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`)
+      const escaped = search.replace(/"/g, '\\"').replace(/,/g, '\\,')
+      query = query.or(`name.ilike.%${escaped}%,email.ilike.%${escaped}%,phone.ilike.%${escaped}%`)
     }
 
     if (status && status !== 'ALL') {

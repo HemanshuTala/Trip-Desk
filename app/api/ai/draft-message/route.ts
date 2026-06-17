@@ -22,9 +22,9 @@ const getAiClientAndModel = () => {
   return { client: null, model: '' }
 }
 
-const { client: aiClient, model: aiModel } = getAiClientAndModel()
-
 export async function POST(request: NextRequest) {
+  const { client: aiClient, model: aiModel } = getAiClientAndModel()
+  
   if (!aiClient) {
     return NextResponse.json(
       { error: 'AI API key not configured' },
@@ -32,16 +32,23 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  let body
   try {
-    const { leadName, tripName, tripDestination, vibeDescription, groupType } = await request.json()
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Malformed JSON request body' }, { status: 400 })
+  }
 
-    if (!leadName || !tripName || !tripDestination || !vibeDescription) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
-    }
+  const { leadName, tripName, tripDestination, vibeDescription, groupType } = body
 
+  if (!leadName || !tripName || !tripDestination || !vibeDescription) {
+    return NextResponse.json(
+      { error: 'Missing required fields' },
+      { status: 400 }
+    )
+  }
+
+  try {
     const prompt = `Draft a warm, short WhatsApp message for a traveller named ${leadName} who is interested in the "${tripName}" trip to ${tripDestination}.
 
 Context about the traveller:

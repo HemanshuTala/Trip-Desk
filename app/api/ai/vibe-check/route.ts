@@ -22,18 +22,26 @@ const getAiClientAndModel = () => {
   return { client: null, model: '' }
 }
 
-const { client: aiClient, model: aiModel } = getAiClientAndModel()
-
 export async function POST(request: NextRequest) {
-  try {
-    const { vibeDescription, groupType, preferredMonth, tripName, tripDestination } = await request.json()
+  const { client: aiClient, model: aiModel } = getAiClientAndModel()
 
-    if (!vibeDescription) {
-      return NextResponse.json(
-        { error: 'Missing vibe description' },
-        { status: 400 }
-      )
-    }
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Malformed JSON request body' }, { status: 400 })
+  }
+
+  const { vibeDescription, groupType, preferredMonth, tripName, tripDestination } = body
+
+  if (!vibeDescription) {
+    return NextResponse.json(
+      { error: 'Missing vibe description' },
+      { status: 400 }
+    )
+  }
+
+  try {
 
     // Heuristic fallback if AI client is not configured
     if (!aiClient) {

@@ -36,6 +36,24 @@ async function getUsers(supabase: any): Promise<UserProfile[]> {
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  
+  const isValidUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+  
+  if (!isValidUuid) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <h1 className="text-2xl font-display font-bold text-ink mb-4">Lead Not Found</h1>
+            <a href="/admin" className="text-rust hover:underline">
+              Return to Lead List
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const cookieStore = await cookies()
   const supabase = getSupabaseServer(cookieStore)
   
@@ -48,7 +66,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
       <div className="min-h-screen bg-cream">
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <h1 className="text-2xl font-bold text-ink mb-4">Lead Not Found</h1>
+            <h1 className="text-2xl font-display font-bold text-ink mb-4">Lead Not Found</h1>
             <a href="/admin" className="text-rust hover:underline">
               Return to Lead List
             </a>

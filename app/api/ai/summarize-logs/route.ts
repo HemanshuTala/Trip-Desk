@@ -22,18 +22,26 @@ const getAiClientAndModel = () => {
   return { client: null, model: '' }
 }
 
-const { client: aiClient, model: aiModel } = getAiClientAndModel()
-
 export async function POST(request: NextRequest) {
-  try {
-    const { logs } = await request.json()
+  const { client: aiClient, model: aiModel } = getAiClientAndModel()
 
-    if (!logs || !Array.isArray(logs) || logs.length === 0) {
-      return NextResponse.json(
-        { error: 'No call logs to summarize' },
-        { status: 400 }
-      )
-    }
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Malformed JSON request body' }, { status: 400 })
+  }
+
+  const { logs } = body
+
+  if (!logs || !Array.isArray(logs) || logs.length === 0) {
+    return NextResponse.json(
+      { error: 'No call logs to summarize' },
+      { status: 400 }
+    )
+  }
+
+  try {
 
     // Heuristic fallback if AI client is not configured
     if (!aiClient) {
