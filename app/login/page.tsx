@@ -52,7 +52,7 @@ export default function LoginPage() {
           }
         }
 
-        setSuccess('Account created successfully. You can now sign in.')
+        setSuccess('Account created successfully. Please check your email for a confirmation link.')
         setIsSignUp(false)
         setPassword('')
       } else {

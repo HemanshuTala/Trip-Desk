@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Trip } from '@/lib/types'
 import { GroupType } from '@/lib/types'
 import { getSupabaseBrowser } from '@/lib/supabase'
@@ -33,6 +33,17 @@ export default function EnquiryForm({ trips, dark = false }: EnquiryFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+
+  useEffect(() => {
+    const handleSelectTrip = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tripId: string }>
+      if (customEvent.detail?.tripId) {
+        setFormData(prev => ({ ...prev, trip_id: customEvent.detail.tripId }))
+      }
+    }
+    window.addEventListener('select-trip', handleSelectTrip)
+    return () => window.removeEventListener('select-trip', handleSelectTrip)
+  }, [])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}

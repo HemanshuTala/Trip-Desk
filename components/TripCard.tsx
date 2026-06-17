@@ -90,6 +90,11 @@ export default function TripCard({ trip, index = 0, featured = false }: TripCard
             </div>
             <a
               href="#enquiry"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('select-trip', { detail: { tripId: trip.id } }))
+                }
+              }}
               className="group/btn inline-flex items-center gap-2 px-6 py-3.5 bg-rust text-cream text-[11px] font-bold tracking-widest uppercase hover:bg-sand hover:text-ink transition-all duration-200 shadow-lg shadow-rust/30"
             >
               Enquire About This Trip
@@ -160,6 +165,11 @@ export default function TripCard({ trip, index = 0, featured = false }: TripCard
           </div>
           <a
             href="#enquiry"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('select-trip', { detail: { tripId: trip.id } }))
+              }
+            }}
             className="group/btn inline-flex items-center gap-1.5 px-4 py-2.5 bg-ink text-cream text-[10px] font-bold tracking-widest uppercase hover:bg-rust transition-all duration-200"
           >
             Enquire

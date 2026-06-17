@@ -39,6 +39,16 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
+  // Handle PKCE auth code exchange (e.g. from email confirmation links)
+  const code = req.nextUrl.searchParams.get('code')
+  if (code) {
+    await supabase.auth.exchangeCodeForSession(code)
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = '/admin'
+    redirectUrl.searchParams.delete('code')
+    return NextResponse.redirect(redirectUrl)
+  }
+
   // Protect admin routes
   if (req.nextUrl.pathname.startsWith('/admin')) {
     if (!session) {
@@ -55,5 +65,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/:path*', '/login'],
+  matcher: ['/', '/admin', '/admin/:path*', '/login'],
 }
