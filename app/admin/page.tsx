@@ -200,17 +200,17 @@ export default async function AdminPage({
             </h1>
             <p className="text-ink/70">Manage and track traveller enquiries</p>
           </div>
-          <div className="flex gap-4">
+           <div className="flex gap-4">
             <a
               href="/admin/trips"
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-white border border-sand/35 hover:border-rust/40 rounded-lg hover:bg-cream/35 text-xs font-semibold tracking-wider uppercase font-sans transition-all flex items-center gap-2"
             >
               <Map className="w-4 h-4 text-olive" />
               Manage Trips
             </a>
             <a
               href="/admin/dashboard"
-              className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-rust text-cream rounded-lg hover:bg-rust/95 active:scale-[0.98] transition-all text-xs font-semibold tracking-wider uppercase font-sans flex items-center gap-2 shadow-sm"
             >
               <LayoutDashboard className="w-4 h-4" />
               Dashboard

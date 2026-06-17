@@ -21,12 +21,12 @@ interface LeadListProps {
 }
 
 const STATUS_COLORS: Record<LeadStatus, string> = {
-  NEW: 'bg-blue-100 text-blue-800',
-  CONTACTED: 'bg-yellow-100 text-yellow-800',
-  QUALIFIED: 'bg-green-100 text-green-800',
-  VIBE_CHECK_SENT: 'bg-purple-100 text-purple-800',
-  CONFIRMED: 'bg-emerald-100 text-emerald-800',
-  NOT_A_FIT: 'bg-red-100 text-red-800',
+  NEW: 'bg-cream text-ink border border-sand/40',
+  CONTACTED: 'bg-sand/20 text-ink border border-sand/40',
+  QUALIFIED: 'bg-olive text-cream',
+  VIBE_CHECK_SENT: 'bg-olive/75 text-sand border border-olive/35',
+  CONFIRMED: 'bg-rust text-cream',
+  NOT_A_FIT: 'bg-ink text-sand/85',
 }
 
 export default function LeadList({
@@ -102,47 +102,47 @@ export default function LeadList({
         </h2>
         <button
           onClick={handleExport}
-          className="px-4 py-2 bg-olive text-white rounded-lg hover:bg-olive/90 transition-colors text-sm flex items-center gap-2"
+          className="px-4 py-2 bg-olive text-cream rounded-lg hover:bg-olive/90 transition-all duration-200 text-xs font-semibold tracking-wider uppercase flex items-center gap-2 shadow-sm font-sans active:scale-[0.98]"
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-3.5 h-3.5 text-sand" />
           Export CSV
         </button>
       </div>
 
       {userRole === 'agent' && (
-        <div className="mb-6 p-4 bg-white border border-sand/40 rounded-lg text-sm text-ink/75 font-sans shadow-sm">
+        <div className="mb-6 p-4 bg-white border border-sand/35 rounded-2xl text-xs text-ink/80 font-sans shadow-sm leading-relaxed">
           You are viewing your own leads and those not yet assigned. Reach out to an administrator for any owner changes.
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-sand/30 shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-6 mb-8">
         <div className="grid md:grid-cols-5 gap-4">
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-ink mb-2">
-              Search
+            <label htmlFor="search" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+              Search Leads
             </label>
             <form onSubmit={handleSearchSubmit} className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-olive/60" />
               <input
                 id="search"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Press Enter to search"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+                placeholder="Press Enter"
+                className="w-full pl-9 pr-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-ink text-xs font-sans transition-all placeholder-ink/30"
               />
             </form>
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-ink mb-2">
-              Status
+            <label htmlFor="status" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+              Filter Status
             </label>
             <select
               id="status"
               value={initialStatus}
               onChange={(e) => updateParams({ status: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+              className="w-full px-3 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-ink text-xs font-sans transition-all cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="NEW">NEW ({statusCounts.NEW})</option>
@@ -155,14 +155,14 @@ export default function LeadList({
           </div>
 
           <div>
-            <label htmlFor="trip" className="block text-sm font-medium text-ink mb-2">
-              Trip
+            <label htmlFor="trip" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+              Filter Trip
             </label>
             <select
               id="trip"
               value={initialTrip}
               onChange={(e) => updateParams({ trip: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+              className="w-full px-3 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-ink text-xs font-sans transition-all cursor-pointer"
             >
               <option value="ALL">All Trips</option>
               {trips.map((trip) => (
@@ -174,14 +174,14 @@ export default function LeadList({
           </div>
 
           <div>
-            <label htmlFor="owner" className="block text-sm font-medium text-ink mb-2">
-              Owner
+            <label htmlFor="owner" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+              Filter Owner
             </label>
             <select
               id="owner"
               value={initialOwner}
               onChange={(e) => updateParams({ owner: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+              className="w-full px-3 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-ink text-xs font-sans transition-all cursor-pointer"
             >
               <option value="ALL">All Owners</option>
               {currentUserId && <option value="MINE">My Leads ({mineCount})</option>}
@@ -192,104 +192,119 @@ export default function LeadList({
           <div className="flex items-end">
             <button
               onClick={handleClearFilters}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm text-ink"
+              className="w-full px-4 py-2.5 border border-sand/45 rounded-lg hover:bg-cream/40 transition-all duration-200 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink font-sans active:scale-[0.98]"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5 text-rust" />
               Clear Filters
             </button>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+      <div className="bg-white rounded-2xl border border-sand/30 shadow-[0_8px_30px_rgb(0,0,0,0.03)] overflow-hidden mb-8">
         {leads.length === 0 ? (
-          <div className="p-8 text-center">
-            <Filter className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-ink/70 mb-2">No leads found matching your criteria.</p>
+          <div className="p-10 text-center">
+            <Filter className="w-10 h-10 text-sand mx-auto mb-4" />
+            <p className="text-ink/70 text-sm font-sans mb-3">No leads found matching your criteria.</p>
             <button
               onClick={handleClearFilters}
-              className="text-rust hover:underline font-medium text-sm"
+              className="text-rust hover:text-rust/85 font-semibold text-xs tracking-wider uppercase font-sans"
             >
               Clear all filters
             </button>
           </div>
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Trip
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Group
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Owner
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {leads.map((lead) => (
-                <tr
-                  key={lead.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => router.push(`/admin/leads/${lead.id}`)}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-ink">{lead.name}</div>
-                    <div className="text-sm text-ink/70">{lead.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-ink">{lead.trip?.name || 'Unknown'}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${STATUS_COLORS[lead.status]}`}>
-                      {lead.status.replace(/_/g, ' ')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink/70">
-                    {new Date(lead.created_at).toLocaleDateString('en-IN')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink/70">
-                    {lead.group_type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink/70">
-                    {lead.owner_id ? 'Assigned' : 'Unassigned'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        router.push(`/admin/leads/${lead.id}`)
-                      }}
-                      className="text-rust hover:underline font-medium flex items-center gap-1 ml-auto"
-                    >
-                      View Details
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-cream/40 border-b border-sand/20">
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Traveller
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Trip Interest
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Enquired On
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Group Type
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Assignment
+                  </th>
+                  <th className="px-6 py-4 text-right text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-sand/15">
+                {leads.map((lead) => (
+                  <tr
+                    key={lead.id}
+                    className="hover:bg-cream/25 transition-colors duration-150 cursor-pointer"
+                    onClick={() => router.push(`/admin/leads/${lead.id}`)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-xs font-semibold text-ink font-sans">{lead.name}</div>
+                      <div className="text-[11px] text-ink/50 font-sans font-light mt-0.5">{lead.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-xs font-medium text-ink font-sans">{lead.trip?.name || 'Unknown'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full font-sans ${STATUS_COLORS[lead.status]}`}>
+                        {lead.status.replace(/_/g, ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink/70 font-sans font-light">
+                      {new Date(lead.created_at).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-[10px] text-ink/75 font-sans font-light bg-sand/10 border border-sand/20 px-2 py-0.5 rounded-full capitalize">
+                        {lead.group_type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink/70 font-sans font-light">
+                      {lead.owner_id ? (
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse" />
+                          Assigned
+                        </span>
+                      ) : (
+                        <span className="text-ink/40">Unassigned</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          router.push(`/admin/leads/${lead.id}`)
+                        }}
+                        className="text-rust hover:text-rust/80 font-bold transition-colors uppercase tracking-wider text-[10px] font-sans flex items-center gap-1 ml-auto"
+                      >
+                        Details →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-between items-center bg-white rounded-lg shadow-sm border border-sand/20 px-6 py-4">
-          <div className="text-sm text-ink/65">
+        <div className="flex justify-between items-center bg-white rounded-2xl border border-sand/35 px-6 py-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+          <div className="text-xs text-ink/65 font-sans">
             Showing Page <span className="font-semibold text-ink">{currentPage}</span> of{' '}
             <span className="font-semibold text-ink">{totalPages}</span> ({totalLeads} total leads)
           </div>
@@ -297,16 +312,16 @@ export default function LeadList({
             <button
               onClick={() => updateParams({ page: (currentPage - 1).toString() })}
               disabled={currentPage <= 1}
-              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-ink"
+              className="p-2 border border-sand/40 rounded-lg hover:bg-cream/45 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink bg-white active:scale-95"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => updateParams({ page: (currentPage + 1).toString() })}
               disabled={currentPage >= totalPages}
-              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-ink"
+              className="p-2 border border-sand/40 rounded-lg hover:bg-cream/45 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink bg-white active:scale-95"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>

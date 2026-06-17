@@ -11,7 +11,32 @@
   --cream: #FFFBF5;
 }
 
-body {
+body, input, select, textarea, button {
   background-color: var(--cream);
   color: var(--ink);
+  font-family: var(--font-poppins), sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-playfair), serif !important;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rust); }
+
+/* Selection */
+::selection { background: var(--yellow); color: var(--ink); }
+
+/* Option elements inside dark select dropdowns */
+.dark-select option {
+  background-color: var(--ink) !important;
+  color: var(--cream) !important;
 }

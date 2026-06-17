@@ -6,7 +6,7 @@ INSERT INTO trips (name, destination, start_date, end_date, price_including_gst,
 ('Coffee Trail Walk', 'Coorg', '2025-09-20', '2025-09-26', 42000.00, 14, 'closed', 'Walk through coffee plantations, understand the bean-to-cup process, and stay in heritage plantation homes.');
 
 -- Insert sample leads
-INSERT INTO leads (name, phone, email, trip_id, group_type, preferred_month, vibe_description, status) VALUES
+INSERT INTO leads (name, phone, email, trip_id, group_type, preferred_month, vibe_description) VALUES
 ('Priya Sharma', '+91 98765 43210', 'priya.sharma@email.com', 
  (SELECT id FROM trips WHERE name = 'Himalayan Village Walk'), 
  'solo', 'June 2025', 'I want to disconnect from city life and experience something authentic. Not looking for tourist spots, just real village life.'),

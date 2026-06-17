@@ -8,9 +8,18 @@ import { CheckCircle, AlertCircle, Send } from 'lucide-react'
 
 interface EnquiryFormProps {
   trips: Trip[]
+  dark?: boolean
 }
 
-export default function EnquiryForm({ trips }: EnquiryFormProps) {
+export default function EnquiryForm({ trips, dark = false }: EnquiryFormProps) {
+  const labelCls = `block text-[10px] uppercase tracking-widest font-semibold mb-2 font-sans ${dark ? 'text-cream/60' : 'text-ink/70'}`
+  const inputCls = (hasError: boolean) =>
+    `w-full px-4 py-3 border rounded-sm focus:ring-1 focus:outline-none transition-all duration-200 text-xs font-sans placeholder-opacity-40 ${
+      dark
+        ? `bg-white/5 text-cream placeholder-cream/30 focus:ring-rust/40 ${hasError ? 'border-rust' : 'border-cream/15 focus:border-rust'} dark-select`
+        : `bg-cream/15 text-ink placeholder-ink/30 focus:ring-rust/30 ${hasError ? 'border-rust' : 'border-sand/40 focus:border-rust'}`
+    }`
+  const errorCls = 'text-rust text-[10px] mt-1.5 font-sans font-medium'
   const supabase = getSupabaseBrowser()
   const [formData, setFormData] = useState({
     name: '',
@@ -113,17 +122,17 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
 
   if (submitSuccess) {
     return (
-      <div className="bg-white rounded-2xl border border-sand/30 shadow-lg p-10 text-center max-w-lg mx-auto">
-        <div className="w-20 h-20 bg-cream border border-sand/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner animate-pulse">
-          <CheckCircle className="w-10 h-10 text-rust" />
+      <div className={`border p-10 text-center shadow-sm ${dark ? 'bg-white/5 border-cream/10' : 'bg-white border-sand/40'}`}>
+        <div className={`w-16 h-16 border rounded-full flex items-center justify-center mx-auto mb-6 ${dark ? 'bg-white/5 border-cream/15' : 'bg-cream border-sand/35'}`}>
+          <CheckCircle className="w-8 h-8 text-rust" />
         </div>
-        <h3 className="text-2xl font-display font-bold text-ink mb-3">Thank you for your enquiry</h3>
-        <p className="text-ink/75 mb-8 font-sans leading-relaxed text-sm">
+        <h3 className={`text-2xl font-display font-bold mb-3 ${dark ? 'text-cream' : 'text-ink'}`}>Thank you for your enquiry</h3>
+        <p className={`mb-8 font-sans leading-relaxed text-xs max-w-sm mx-auto font-light ${dark ? 'text-cream/60' : 'text-ink/75'}`}>
           We have received your details and will get in touch with you soon. We look forward to talking about your trip.
         </p>
         <button
           onClick={() => setSubmitSuccess(false)}
-          className="inline-flex items-center justify-center px-6 py-2.5 bg-rust text-white text-sm font-medium rounded-md hover:bg-rust/95 active:scale-[0.98] transition-all duration-200 shadow-md"
+          className="inline-flex items-center justify-center px-8 py-3.5 bg-rust text-cream hover:bg-rust/90 font-bold text-[10px] tracking-widest uppercase transition-all duration-200 active:scale-[0.98] border border-rust"
         >
           Send another enquiry
         </button>
@@ -133,160 +142,134 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
 
   if (trips.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-sand/30 p-10 text-center">
-        <p className="text-ink/75">No trips available to enquire about.</p>
+      <div className={`border p-12 text-center shadow-sm ${dark ? 'bg-white/5 border-cream/10' : 'bg-white border-sand/40'}`}>
+        <p className={`text-xs font-sans font-light ${dark ? 'text-cream/50' : 'text-ink/60'}`}>No trips available to enquire about.</p>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-sand/35 shadow-lg p-8 md:p-10 hover:shadow-xl transition-shadow duration-300">
+    <form
+      onSubmit={handleSubmit}
+      className={`border p-8 transition-all duration-300 ${
+        dark
+          ? 'bg-white/5 border-cream/10 backdrop-blur-sm'
+          : 'bg-white border-sand/45 shadow-[0_4px_24px_rgba(28,27,26,0.02)] hover:shadow-md'
+      }`}
+    >
+      <div className={`border-b pb-6 mb-8 ${dark ? 'border-cream/10' : 'border-sand/30'}`}>
+        <span className="text-[9px] uppercase tracking-widest text-rust font-bold block mb-1 font-sans">Nomichi Explorers</span>
+        <h3 className={`text-2xl font-display font-bold leading-tight ${dark ? 'text-cream' : 'text-ink'}`}>Journey Enquiry</h3>
+        <p className={`text-xs font-sans mt-2 font-light ${dark ? 'text-cream/50' : 'text-ink/60'}`}>
+          Complete this brief questionnaire. We read every response carefully.
+        </p>
+      </div>
+
       {errors.submit && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm font-sans">
+        <div className="bg-rust/10 border border-rust/30 text-rust px-4 py-3 rounded-sm mb-6 text-xs font-sans">
           {errors.submit}
         </div>
       )}
 
-      <div className="space-y-6">
-        <div>
-          <label htmlFor="name" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Name *
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
-              errors.name ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
-            placeholder="Your full name"
-          />
-          {errors.name && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.name}</p>}
+      <div className="space-y-5">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="name" className={labelCls}>Name *</label>
+            <input
+              id="name" name="name" type="text"
+              value={formData.name} onChange={handleChange}
+              className={inputCls(!!errors.name)}
+              placeholder="Your full name"
+            />
+            {errors.name && <p className={errorCls}>{errors.name}</p>}
+          </div>
+          <div>
+            <label htmlFor="phone" className={labelCls}>Phone *</label>
+            <input
+              id="phone" name="phone" type="tel"
+              value={formData.phone} onChange={handleChange}
+              className={inputCls(!!errors.phone)}
+              placeholder="+91 98765 43210"
+            />
+            {errors.phone && <p className={errorCls}>{errors.phone}</p>}
+          </div>
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Phone *
-          </label>
+          <label htmlFor="email" className={labelCls}>Email *</label>
           <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
-              errors.phone ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
-            placeholder="+91 98765 43210"
-          />
-          {errors.phone && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.phone}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Email *
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
-              errors.email ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
+            id="email" name="email" type="email"
+            value={formData.email} onChange={handleChange}
+            className={inputCls(!!errors.email)}
             placeholder="you@example.com"
           />
-          {errors.email && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.email}</p>}
+          {errors.email && <p className={errorCls}>{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="trip_id" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Trip *
-          </label>
+          <label htmlFor="trip_id" className={labelCls}>Select Journey *</label>
           <select
-            id="trip_id"
-            name="trip_id"
-            value={formData.trip_id}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink font-sans ${
-              errors.trip_id ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
+            id="trip_id" name="trip_id"
+            value={formData.trip_id} onChange={handleChange}
+            className={inputCls(!!errors.trip_id) + ' cursor-pointer'}
           >
             <option value="">Select a trip</option>
             {trips.map((trip) => (
-              <option key={trip.id} value={trip.id} className="text-ink">
-                {trip.name} - {trip.destination}
+              <option key={trip.id} value={trip.id}>
+                {trip.name} – {trip.destination}
               </option>
             ))}
           </select>
-          {errors.trip_id && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.trip_id}</p>}
+          {errors.trip_id && <p className={errorCls}>{errors.trip_id}</p>}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="group_type" className={labelCls}>Travelling style *</label>
+            <select
+              id="group_type" name="group_type"
+              value={formData.group_type} onChange={handleChange}
+              className={inputCls(false) + ' cursor-pointer'}
+            >
+              <option value="solo">Solo</option>
+              <option value="friends">Friends</option>
+              <option value="couple">Couple</option>
+              <option value="family">Family</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="preferred_month" className={labelCls}>Preferred Month *</label>
+            <input
+              id="preferred_month" name="preferred_month" type="text"
+              value={formData.preferred_month} onChange={handleChange}
+              className={inputCls(!!errors.preferred_month)}
+              placeholder="October 2026"
+            />
+            {errors.preferred_month && <p className={errorCls}>{errors.preferred_month}</p>}
+          </div>
         </div>
 
         <div>
-          <label htmlFor="group_type" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Group Type *
-          </label>
-          <select
-            id="group_type"
-            name="group_type"
-            value={formData.group_type}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-cream/30 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink font-sans"
-          >
-            <option value="solo">Solo</option>
-            <option value="friends">Friends</option>
-            <option value="couple">Couple</option>
-            <option value="family">Family</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="preferred_month" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            Preferred Month *
-          </label>
-          <input
-            id="preferred_month"
-            name="preferred_month"
-            type="text"
-            value={formData.preferred_month}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
-              errors.preferred_month ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
-            placeholder="June 2025"
-          />
-          {errors.preferred_month && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.preferred_month}</p>}
-        </div>
-
-        <div>
-          <label htmlFor="vibe_description" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
-            What are you hoping this trip feels like *
-          </label>
+          <label htmlFor="vibe_description" className={labelCls}>What are you hoping this trip feels like *</label>
           <textarea
-            id="vibe_description"
-            name="vibe_description"
-            value={formData.vibe_description}
-            onChange={handleChange}
+            id="vibe_description" name="vibe_description"
+            value={formData.vibe_description} onChange={handleChange}
             rows={4}
-            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none resize-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
-              errors.vibe_description ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
-            }`}
-            placeholder="Tell us what you are looking for in this trip..."
+            className={inputCls(!!errors.vibe_description) + ' resize-none leading-relaxed'}
+            placeholder="Describe the pace, atmosphere, and feeling you are looking for..."
           />
-          {errors.vibe_description && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.vibe_description}</p>}
+          {errors.vibe_description && <p className={errorCls}>{errors.vibe_description}</p>}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-rust text-white py-4 rounded-lg font-medium hover:bg-rust/95 active:scale-[0.99] transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-sans mt-2"
+          className="w-full bg-rust text-cream py-4 font-bold text-[10px] tracking-widest uppercase hover:bg-rust/90 border border-rust active:scale-[0.99] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-sans mt-1"
         >
-          {isSubmitting ? 'Submitting...' : 'Send Enquiry'}
+          {isSubmitting ? 'Sending Request...' : 'Submit Enquiry'}
         </button>
       </div>
     </form>
   )
 }
+

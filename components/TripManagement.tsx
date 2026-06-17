@@ -174,21 +174,21 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
       <div className="mb-6">
         <button
           onClick={() => setIsCreating(true)}
-          className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors"
+          className="px-4 py-2 bg-rust text-cream rounded-lg hover:bg-rust/95 active:scale-[0.98] transition-all duration-200 text-xs font-semibold tracking-wider uppercase font-sans shadow-sm"
         >
           Create New Trip
         </button>
       </div>
 
       {(isCreating || editingTrip) && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-display font-bold text-ink mb-4">
+        <div className="bg-white rounded-2xl border border-sand/30 shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-8 mb-8">
+          <h2 className="text-lg font-display font-bold text-ink mb-6">
             {isCreating ? 'Create New Trip' : 'Edit Trip'}
           </h2>
-          <form onSubmit={isCreating ? handleCreate : handleUpdate} className="space-y-4">
+          <form onSubmit={isCreating ? handleCreate : handleUpdate} className="space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="name" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   Trip Name *
                 </label>
                 <input
@@ -197,13 +197,13 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink placeholder-ink/30"
                   placeholder="Himalayan Village Walk"
                 />
               </div>
 
               <div>
-                <label htmlFor="destination" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="destination" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   Destination *
                 </label>
                 <input
@@ -212,13 +212,13 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   value={formData.destination}
                   onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink placeholder-ink/30"
                   placeholder="Spiti Valley"
                 />
               </div>
 
               <div>
-                <label htmlFor="start_date" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="start_date" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   Start Date *
                 </label>
                 <input
@@ -227,12 +227,12 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   value={formData.start_date}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink"
                 />
               </div>
 
               <div>
-                <label htmlFor="end_date" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="end_date" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   End Date *
                 </label>
                 <input
@@ -241,12 +241,12 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   value={formData.end_date}
                   onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink"
                 />
               </div>
 
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="price" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   Price (including GST) *
                 </label>
                 <input
@@ -257,13 +257,13 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   required
                   min="0"
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink placeholder-ink/30"
                   placeholder="45000"
                 />
               </div>
 
               <div>
-                <label htmlFor="seats" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="seats" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
                   Total Seats *
                 </label>
                 <input
@@ -273,20 +273,20 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                   onChange={(e) => setFormData({ ...formData, total_seats: e.target.value })}
                   required
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-xs font-sans transition-all text-ink placeholder-ink/30"
                   placeholder="12"
                 />
               </div>
 
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-ink mb-2">
-                  Status *
+                <label htmlFor="status" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+                  Booking Status *
                 </label>
                 <select
                   id="status"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as TripStatus })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+                  className="w-full px-3 py-2.5 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none bg-cream/10 text-ink text-xs font-sans transition-all cursor-pointer"
                 >
                   <option value="open">Open</option>
                   <option value="closed">Closed</option>
@@ -295,8 +295,8 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-ink mb-2">
-                Description *
+              <label htmlFor="description" className="block text-[10px] uppercase tracking-wider font-semibold text-ink/75 mb-2 font-sans">
+                Trip Description *
               </label>
               <textarea
                 id="description"
@@ -304,7 +304,7 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none resize-none"
+                className="w-full px-4 py-3 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none resize-none bg-cream/10 text-xs font-sans transition-all text-ink placeholder-ink/30"
                 placeholder="A slow walk through ancient villages in Spiti..."
               />
             </div>
@@ -313,7 +313,7 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-rust text-cream text-[10px] font-bold tracking-wider uppercase rounded-lg hover:bg-rust/95 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-sans"
               >
                 {isSaving ? 'Saving...' : (isCreating ? 'Create Trip' : 'Update Trip')}
               </button>
@@ -321,7 +321,7 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
                 type="button"
                 onClick={resetForm}
                 disabled={isSaving}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-sand/45 text-ink text-[10px] font-bold tracking-wider uppercase rounded-lg hover:bg-cream/45 transition-all font-sans active:scale-95"
               >
                 Cancel
               </button>
@@ -330,102 +330,106 @@ export default function TripManagement({ trips: initialTrips, userRole = 'agent'
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-2xl border border-sand/30 shadow-[0_8px_30px_rgb(0,0,0,0.03)] overflow-hidden">
         {trips.length === 0 ? (
-          <div className="p-8 text-center">
-            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-ink/70 mb-2">No trips yet.</p>
+          <div className="p-10 text-center">
+            <MapPin className="w-10 h-10 text-sand mx-auto mb-4" />
+            <p className="text-ink/70 text-sm font-sans mb-3">No trips created yet.</p>
             <button
               onClick={() => setIsCreating(true)}
-              className="text-rust hover:underline font-medium flex items-center gap-2 mx-auto"
+              className="text-rust hover:text-rust/85 font-semibold text-xs tracking-wider uppercase font-sans flex items-center gap-1.5 mx-auto"
             >
               <Plus className="w-4 h-4" />
               Create your first trip
             </button>
           </div>
         ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Destination
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Dates
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Seats
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-ink/70 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {trips.map((trip) => (
-                <tr key={trip.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-ink">{trip.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink">
-                    {trip.destination}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink/70">
-                    {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink font-medium">
-                    {formatPrice(trip.price_including_gst)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-ink">
-                    {trip.total_seats}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      trip.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {trip.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                    <button
-                      onClick={() => startEdit(trip)}
-                      disabled={isSaving}
-                      className="text-rust hover:underline font-medium mr-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                    >
-                      <Edit className="w-4 h-4" />
-                      Edit
-                    </button>
-                    {userRole === 'admin' ? (
-                      <button
-                        onClick={() => handleDelete(trip.id)}
-                        disabled={isDeleting === trip.id}
-                        className="text-red-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        {isDeleting === trip.id ? 'Deleting...' : 'Delete'}
-                      </button>
-                    ) : (
-                      <span
-                        className="text-gray-400 text-xs italic font-sans flex items-center gap-1 cursor-not-allowed"
-                        title="Trip deletion is restricted to administrators only."
-                      >
-                        Delete Restricted
-                      </span>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-cream/40 border-b border-sand/20">
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Trip Name
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Destination
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Dates
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Price (inc. GST)
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Seats
+                  </th>
+                  <th className="px-6 py-4 text-left text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-right text-[9px] font-semibold text-ink/60 uppercase tracking-widest font-sans">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-sand/15">
+                {trips.map((trip) => (
+                  <tr key={trip.id} className="hover:bg-cream/25 transition-colors duration-150">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-xs font-semibold text-ink font-sans">{trip.name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink font-sans">
+                      {trip.destination}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink/70 font-sans font-light">
+                      {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink font-semibold font-sans">
+                      {formatPrice(trip.price_including_gst)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-ink font-sans">
+                      {trip.total_seats}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full font-sans ${
+                        trip.status === 'open' ? 'bg-olive text-cream' : 'bg-sand/30 text-ink/70'
+                      }`}>
+                        {trip.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-xs">
+                      <div className="flex items-center justify-end">
+                        <button
+                          onClick={() => startEdit(trip)}
+                          disabled={isSaving}
+                          className="text-olive hover:text-olive/85 transition-colors font-bold uppercase tracking-wider text-[10px] font-sans flex items-center gap-1"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          Edit
+                        </button>
+                        {userRole === 'admin' ? (
+                          <button
+                            onClick={() => handleDelete(trip.id)}
+                            disabled={isDeleting === trip.id}
+                            className="text-rust hover:text-rust/80 transition-colors font-bold uppercase tracking-wider text-[10px] font-sans flex items-center gap-1 ml-4"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            {isDeleting === trip.id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        ) : (
+                          <span
+                            className="text-ink/30 text-[10px] italic font-sans flex items-center gap-1 cursor-not-allowed ml-4"
+                            title="Trip deletion is restricted to administrators only."
+                          >
+                            Delete Restricted
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

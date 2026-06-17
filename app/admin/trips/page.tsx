@@ -50,7 +50,7 @@ export default async function TripsPage() {
           </div>
           <a
             href="/admin"
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 bg-white border border-sand/35 hover:border-rust/40 rounded-lg hover:bg-cream/35 text-xs font-semibold tracking-wider uppercase font-sans transition-all"
           >
             Back to Leads
           </a>
