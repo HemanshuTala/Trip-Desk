@@ -9,6 +9,7 @@ interface LeadListProps {
   leads: Lead[]
   trips: Trip[]
   currentUserId?: string
+  userRole?: 'admin' | 'agent'
   totalLeads: number
   currentPage: number
   statusCounts: Record<string, number>
@@ -32,6 +33,7 @@ export default function LeadList({
   leads,
   trips,
   currentUserId,
+  userRole = 'agent',
   totalLeads,
   currentPage,
   statusCounts,
@@ -90,6 +92,13 @@ export default function LeadList({
         <h2 className="text-xl font-display font-bold text-ink flex items-center gap-2">
           <Filter className="w-5 h-5" />
           Leads ({totalLeads})
+          <span className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full font-sans ${
+            userRole === 'admin'
+              ? 'bg-rust/10 text-rust border border-rust/20'
+              : 'bg-olive/10 text-olive border border-olive/20'
+          }`}>
+            {userRole === 'admin' ? 'Admin Portal' : 'Agent Portal'}
+          </span>
         </h2>
         <button
           onClick={handleExport}
@@ -99,6 +108,12 @@ export default function LeadList({
           Export CSV
         </button>
       </div>
+
+      {userRole === 'agent' && (
+        <div className="mb-6 p-4 bg-white border border-sand/40 rounded-lg text-sm text-ink/75 font-sans shadow-sm">
+          You are viewing your own leads and those not yet assigned. Reach out to an administrator for any owner changes.
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="grid md:grid-cols-5 gap-4">

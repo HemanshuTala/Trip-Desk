@@ -56,6 +56,23 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
 
   const cookieStore = await cookies()
   const supabase = getSupabaseServer(cookieStore)
+
+  let user = null
+  let userProfile = null
+  try {
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    user = currentUser
+    if (user) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      userProfile = profile
+    }
+  } catch (error) {
+    console.warn('Could not get current user or profile:', error)
+  }
   
   const lead = await getLead(supabase, id)
   const callLogs = await getCallLogs(supabase, id)
@@ -79,7 +96,13 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="min-h-screen bg-cream">
       <div className="container mx-auto px-4 py-8">
-        <LeadDetail lead={lead} callLogs={callLogs} users={users} />
+        <LeadDetail
+          lead={lead}
+          callLogs={callLogs}
+          users={users}
+          currentUserRole={userProfile?.role || 'agent'}
+          currentUserId={user?.id}
+        />
       </div>
     </div>
   )

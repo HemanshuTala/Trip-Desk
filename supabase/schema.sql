@@ -48,6 +48,7 @@ CREATE TABLE user_profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
   full_name TEXT,
+  role TEXT NOT NULL DEFAULT 'agent' CHECK (role IN ('admin', 'agent')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(email)
 );
@@ -95,91 +96,175 @@ CREATE POLICY "Admins can view all trips"
   ON trips FOR SELECT
   USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Admins can insert trips"
+CREATE POLICY "Admins and agents can insert trips"
   ON trips FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated');
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role IN ('admin', 'agent')
+    )
+  );
 
-CREATE POLICY "Admins can update trips"
+CREATE POLICY "Admins and agents can update trips"
   ON trips FOR UPDATE
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role IN ('admin', 'agent')
+    )
+  );
 
-CREATE POLICY "Admins can delete trips"
+CREATE POLICY "Only admins can delete trips"
   ON trips FOR DELETE
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+  );
 
 -- RLS Policies for leads (admin full access, owner can see own leads)
-CREATE POLICY "Admins can view all leads"
+CREATE POLICY "Allow select leads based on role"
   ON leads FOR SELECT
-  USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Owners can view own leads"
-  ON leads FOR SELECT
-  USING (auth.uid() = owner_id);
-
-CREATE POLICY "Admins can insert leads"
-  ON leads FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+    OR
+    (
+      EXISTS (
+        SELECT 1 FROM user_profiles
+        WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'agent'
+      )
+      AND (owner_id = auth.uid() OR owner_id IS NULL)
+    )
+  );
 
 CREATE POLICY "Anyone can insert leads"
   ON leads FOR INSERT
   WITH CHECK (true);
 
-CREATE POLICY "Admins can update leads"
+CREATE POLICY "Allow update leads based on role"
   ON leads FOR UPDATE
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+    OR
+    (
+      EXISTS (
+        SELECT 1 FROM user_profiles
+        WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'agent'
+      )
+      AND (owner_id = auth.uid() OR owner_id IS NULL)
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+    OR
+    (
+      EXISTS (
+        SELECT 1 FROM user_profiles
+        WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'agent'
+      )
+      AND (owner_id = auth.uid() OR owner_id IS NULL)
+    )
+  );
 
-CREATE POLICY "Owners can update own leads"
-  ON leads FOR UPDATE
-  USING (auth.uid() = owner_id);
-
-CREATE POLICY "Admins can delete leads"
+CREATE POLICY "Only admins can delete leads"
   ON leads FOR DELETE
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+  );
 
 -- RLS Policies for call_logs (admin full access)
-CREATE POLICY "Admins can view call_logs"
+CREATE POLICY "Allow select call_logs based on lead access"
   ON call_logs FOR SELECT
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+    OR
+    EXISTS (
+      SELECT 1 FROM leads
+      WHERE leads.id = call_logs.lead_id
+        AND (leads.owner_id = auth.uid() OR leads.owner_id IS NULL)
+    )
+  );
 
-CREATE POLICY "Admins can insert call_logs"
+CREATE POLICY "Allow insert call_logs based on lead access"
   ON call_logs FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated');
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+    OR
+    (
+      EXISTS (
+        SELECT 1 FROM leads
+        WHERE leads.id = call_logs.lead_id
+          AND (leads.owner_id = auth.uid() OR leads.owner_id IS NULL)
+      )
+      AND (created_by = auth.uid())
+    )
+  );
 
-CREATE POLICY "Admins can update call_logs"
+CREATE POLICY "Only admins can update or delete call_logs"
   ON call_logs FOR UPDATE
-  USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can delete call_logs"
-  ON call_logs FOR DELETE
-  USING (auth.role() = 'authenticated');
+  USING (
+    EXISTS (
+      SELECT 1 FROM user_profiles
+      WHERE user_profiles.id = auth.uid() AND user_profiles.role = 'admin'
+    )
+  );
 
 -- RLS Policies for user_profiles
-CREATE POLICY "Users can view own profile"
-  ON user_profiles FOR SELECT
-  USING (auth.uid() = id);
-
-CREATE POLICY "Authenticated users can view all profiles"
+CREATE POLICY "Allow authenticated users to view all profiles"
   ON user_profiles FOR SELECT
   USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Users can insert own profile"
-  ON user_profiles FOR INSERT
-  WITH CHECK (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile"
-  ON user_profiles FOR UPDATE
+CREATE POLICY "Allow users to manage own profile"
+  ON user_profiles FOR ALL
   USING (auth.uid() = id);
 
 -- Trigger to automatically create a user profile when a user signs up
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  profile_count INTEGER;
+  user_role TEXT;
 BEGIN
-  INSERT INTO public.user_profiles (id, email, full_name)
+  -- Check how many profiles currently exist
+  SELECT COUNT(*) INTO profile_count FROM public.user_profiles;
+  
+  -- If this is the first user, make them admin, otherwise agent
+  IF profile_count = 0 THEN
+    user_role := 'admin';
+  ELSE
+    user_role := 'agent';
+  END IF;
+
+  INSERT INTO public.user_profiles (id, email, full_name, role)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '')
-  );
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''),
+    user_role
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET email = EXCLUDED.email,
+      full_name = EXCLUDED.full_name,
+      role = COALESCE(public.user_profiles.role, EXCLUDED.role);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

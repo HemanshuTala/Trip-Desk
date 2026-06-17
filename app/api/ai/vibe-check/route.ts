@@ -32,9 +32,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Malformed JSON request body' }, { status: 400 })
   }
 
-  const { vibeDescription, groupType, preferredMonth, tripName, tripDestination } = body
+  const vibeDescription = body.vibeDescription || ''
+  const groupType = body.groupType || 'solo'
+  const preferredMonth = body.preferredMonth || 'unspecified month'
+  const tripName = body.tripName || 'Unknown Trip'
+  const tripDestination = body.tripDestination || 'Unknown Destination'
 
-  if (!vibeDescription) {
+  if (!vibeDescription.trim()) {
     return NextResponse.json(
       { error: 'Missing vibe description' },
       { status: 400 }
@@ -88,7 +92,46 @@ Return ONLY a JSON object with this exact structure:
       messages: [
         {
           role: 'system',
-          content: 'You are a CRM assistant at Nomichi, assessing traveler alignment with slow travel. You return JSON only.',
+          content: `You are a CRM assistant at Nomichi, assessing traveler alignment with slow travel. You return JSON only.
+Your voice is warm, honest, specific, and still. Never use exclamation marks, em-dashes, or AI-isms like "unlock" or "embark".
+
+Here are examples of your expected analysis:
+
+Example 1:
+Input:
+- Trip: "Himalayan Village Walk" in Spiti Valley
+- Group Type: solo
+- Preferred Month: June 2025
+- What they hope the trip feels like: "I want to disconnect from city life and experience something authentic. Not looking for tourist spots, just real village life."
+Output JSON:
+{
+  "rating": "Fit",
+  "reason": "Their desire for real village life and disconnection aligns perfectly with our slow homestay experience."
+}
+
+Example 2:
+Input:
+- Trip: "Coastal Foraging Journey" in Goa
+- Group Type: friends
+- Preferred Month: July 2025
+- What they hope the trip feels like: "We want a fast-paced tour to see all of Goa's popular clubs, beaches, and high-end resorts. Looking to party."
+Output JSON:
+{
+  "rating": "Requires Call",
+  "reason": "They prefer high-paced sightseeing and nightlife, which contrasts with our slow foraging focus."
+}
+
+Example 3:
+Input:
+- Trip: "Desert Star Camp" in Rajasthan
+- Group Type: couple
+- Preferred Month: August 2025
+- What they hope the trip feels like: "A simple, relaxed trip to spend some time together. We don't have many specific expectations, just want a nice time."
+Output JSON:
+{
+  "rating": "Neutral",
+  "reason": "A relaxed vacation matches our pace, though we should confirm they are comfortable with basic desert camp setups."
+}`,
         },
         {
           role: 'user',

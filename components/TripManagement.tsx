@@ -8,9 +8,10 @@ import { Plus, Edit, Trash2, Calendar, MapPin, Users, DollarSign } from 'lucide-
 
 interface TripManagementProps {
   trips: Trip[]
+  userRole?: 'admin' | 'agent'
 }
 
-export default function TripManagement({ trips: initialTrips }: TripManagementProps) {
+export default function TripManagement({ trips: initialTrips, userRole = 'agent' }: TripManagementProps) {
   const router = useRouter()
   const supabase = getSupabaseBrowser()
   const [trips, setTrips] = useState(initialTrips)
@@ -403,14 +404,23 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
                       <Edit className="w-4 h-4" />
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(trip.id)}
-                      disabled={isDeleting === trip.id}
-                      className="text-red-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      {isDeleting === trip.id ? 'Deleting...' : 'Delete'}
-                    </button>
+                    {userRole === 'admin' ? (
+                      <button
+                        onClick={() => handleDelete(trip.id)}
+                        disabled={isDeleting === trip.id}
+                        className="text-red-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {isDeleting === trip.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    ) : (
+                      <span
+                        className="text-gray-400 text-xs italic font-sans flex items-center gap-1 cursor-not-allowed"
+                        title="Trip deletion is restricted to administrators only."
+                      >
+                        Delete Restricted
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}

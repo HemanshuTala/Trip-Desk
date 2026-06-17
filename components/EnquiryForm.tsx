@@ -113,17 +113,17 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
 
   if (submitSuccess) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-8 text-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="w-8 h-8 text-green-600" />
+      <div className="bg-white rounded-2xl border border-sand/30 shadow-lg p-10 text-center max-w-lg mx-auto">
+        <div className="w-20 h-20 bg-cream border border-sand/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner animate-pulse">
+          <CheckCircle className="w-10 h-10 text-rust" />
         </div>
-        <h3 className="text-xl font-display font-bold text-ink mb-2">Thank you for your enquiry</h3>
-        <p className="text-ink/70 mb-6">
-          We have received your enquiry and will get in touch with you soon.
+        <h3 className="text-2xl font-display font-bold text-ink mb-3">Thank you for your enquiry</h3>
+        <p className="text-ink/75 mb-8 font-sans leading-relaxed text-sm">
+          We have received your details and will get in touch with you soon. We look forward to talking about your trip.
         </p>
         <button
           onClick={() => setSubmitSuccess(false)}
-          className="text-rust hover:underline font-medium"
+          className="inline-flex items-center justify-center px-6 py-2.5 bg-rust text-white text-sm font-medium rounded-md hover:bg-rust/95 active:scale-[0.98] transition-all duration-200 shadow-md"
         >
           Send another enquiry
         </button>
@@ -133,23 +133,23 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
 
   if (trips.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-8 text-center">
-        <p className="text-ink/70">No trips available to enquire about.</p>
+      <div className="bg-white rounded-2xl border border-sand/30 p-10 text-center">
+        <p className="text-ink/75">No trips available to enquire about.</p>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-sand/35 shadow-lg p-8 md:p-10 hover:shadow-xl transition-shadow duration-300">
       {errors.submit && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm font-sans">
           {errors.submit}
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="name" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Name *
           </label>
           <input
@@ -158,16 +158,16 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             type="text"
             value={formData.name}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
+              errors.name ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
             placeholder="Your full name"
           />
-          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+          {errors.name && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.name}</p>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="phone" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Phone *
           </label>
           <input
@@ -176,16 +176,16 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             type="tel"
             value={formData.phone}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
+              errors.phone ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
             placeholder="+91 98765 43210"
           />
-          {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+          {errors.phone && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.phone}</p>}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="email" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Email *
           </label>
           <input
@@ -194,16 +194,16 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             type="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
+              errors.email ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
             placeholder="you@example.com"
           />
-          {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="trip_id" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="trip_id" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Trip *
           </label>
           <select
@@ -211,22 +211,22 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             name="trip_id"
             value={formData.trip_id}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none ${
-              errors.trip_id ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink font-sans ${
+              errors.trip_id ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
           >
             <option value="">Select a trip</option>
             {trips.map((trip) => (
-              <option key={trip.id} value={trip.id}>
+              <option key={trip.id} value={trip.id} className="text-ink">
                 {trip.name} - {trip.destination}
               </option>
             ))}
           </select>
-          {errors.trip_id && <p className="text-red-600 text-sm mt-1">{errors.trip_id}</p>}
+          {errors.trip_id && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.trip_id}</p>}
         </div>
 
         <div>
-          <label htmlFor="group_type" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="group_type" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Group Type *
           </label>
           <select
@@ -234,7 +234,7 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             name="group_type"
             value={formData.group_type}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
+            className="w-full px-4 py-3 bg-cream/30 border border-sand/40 rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink font-sans"
           >
             <option value="solo">Solo</option>
             <option value="friends">Friends</option>
@@ -244,7 +244,7 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
         </div>
 
         <div>
-          <label htmlFor="preferred_month" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="preferred_month" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             Preferred Month *
           </label>
           <input
@@ -253,16 +253,16 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             type="text"
             value={formData.preferred_month}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none ${
-              errors.preferred_month ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
+              errors.preferred_month ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
             placeholder="June 2025"
           />
-          {errors.preferred_month && <p className="text-red-600 text-sm mt-1">{errors.preferred_month}</p>}
+          {errors.preferred_month && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.preferred_month}</p>}
         </div>
 
         <div>
-          <label htmlFor="vibe_description" className="block text-sm font-medium text-ink mb-2">
+          <label htmlFor="vibe_description" className="block text-xs uppercase tracking-wider font-semibold text-ink/70 mb-2 font-sans">
             What are you hoping this trip feels like *
           </label>
           <textarea
@@ -271,18 +271,18 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
             value={formData.vibe_description}
             onChange={handleChange}
             rows={4}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none resize-none ${
-              errors.vibe_description ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-cream/30 border rounded-lg focus:ring-2 focus:ring-rust/20 focus:border-rust outline-none resize-none transition-all duration-200 text-ink placeholder-ink/30 font-sans ${
+              errors.vibe_description ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : 'border-sand/40'
             }`}
             placeholder="Tell us what you are looking for in this trip..."
           />
-          {errors.vibe_description && <p className="text-red-600 text-sm mt-1">{errors.vibe_description}</p>}
+          {errors.vibe_description && <p className="text-red-600 text-xs mt-1.5 font-sans">{errors.vibe_description}</p>}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-rust text-white py-3 rounded-lg font-medium hover:bg-rust/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-rust text-white py-4 rounded-lg font-medium hover:bg-rust/95 active:scale-[0.99] transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-sans mt-2"
         >
           {isSubmitting ? 'Submitting...' : 'Send Enquiry'}
         </button>

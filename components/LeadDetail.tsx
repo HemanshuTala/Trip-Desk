@@ -10,6 +10,8 @@ interface LeadDetailProps {
   lead: Lead
   callLogs: CallLog[]
   users: UserProfile[]
+  currentUserRole?: 'admin' | 'agent'
+  currentUserId?: string
 }
 
 const PIPELINE_STAGES: LeadStatus[] = [
@@ -30,10 +32,21 @@ const STATUS_COLORS: Record<LeadStatus, string> = {
   NOT_A_FIT: 'bg-red-100 text-red-800',
 }
 
-export default function LeadDetail({ lead, callLogs: initialCallLogs, users }: LeadDetailProps) {
+export default function LeadDetail({
+  lead,
+  callLogs: initialCallLogs,
+  users,
+  currentUserRole = 'agent',
+  currentUserId,
+}: LeadDetailProps) {
   const router = useRouter()
   const supabase = getSupabaseBrowser()
   const [leadData, setLeadData] = useState(lead)
+
+  const isAgent = currentUserRole === 'agent'
+  const isOwner = leadData.owner_id === currentUserId
+  const isUnassigned = !leadData.owner_id
+  const canModify = currentUserRole === 'admin' || (isAgent && (isOwner || isUnassigned))
   const [callLogs, setCallLogs] = useState(initialCallLogs)
   const [newNote, setNewNote] = useState('')
   const [nextAction, setNextAction] = useState('')
@@ -333,41 +346,47 @@ export default function LeadDetail({ lead, callLogs: initialCallLogs, users }: L
               </div>
             )}
 
-            <form onSubmit={handleAddNote} className="mb-8 p-4 bg-cream rounded-lg border border-sand">
-              <h3 className="text-sm font-semibold text-ink mb-3">Add Note</h3>
-              <div className="space-y-4">
-                <div>
-                  <textarea
-                    id="note"
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
-                    rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none resize-none bg-white text-ink"
-                    placeholder="What was discussed on the call..."
-                  />
-                </div>
-                <div>
-                  <label htmlFor="nextAction" className="block text-xs font-semibold text-ink/75 mb-1">
-                    Next Action (optional)
-                  </label>
-                  <input
-                    id="nextAction"
-                    type="text"
-                    value={nextAction}
-                    onChange={(e) => setNextAction(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
-                    placeholder="e.g., Follow up in 3 days"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isAddingNote || !newNote.trim()}
-                  className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-                >
-                  {isAddingNote ? 'Adding...' : 'Add Note'}
-                </button>
+            {!canModify ? (
+              <div className="mb-8 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-ink/60 text-center font-sans shadow-sm">
+                Only the owner of this lead or an administrator can record call notes.
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleAddNote} className="mb-8 p-4 bg-cream rounded-lg border border-sand">
+                <h3 className="text-sm font-semibold text-ink mb-3">Add Note</h3>
+                <div className="space-y-4">
+                  <div>
+                    <textarea
+                      id="note"
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none resize-none bg-white text-ink"
+                      placeholder="What was discussed on the call..."
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="nextAction" className="block text-xs font-semibold text-ink/75 mb-1">
+                      Next Action (optional)
+                    </label>
+                    <input
+                      id="nextAction"
+                      type="text"
+                      value={nextAction}
+                      onChange={(e) => setNextAction(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+                      placeholder="e.g., Follow up in 3 days"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isAddingNote || !newNote.trim()}
+                    className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                  >
+                    {isAddingNote ? 'Adding...' : 'Add Note'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div className="space-y-4">
               {callLogs.length === 0 ? (
@@ -430,7 +449,7 @@ export default function LeadDetail({ lead, callLogs: initialCallLogs, users }: L
                   <button
                     key={stage}
                     onClick={() => handleStatusChange(stage)}
-                    disabled={isUpdatingStatus}
+                    disabled={isUpdatingStatus || !canModify}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       isActive
                         ? 'bg-rust text-white'
@@ -451,21 +470,61 @@ export default function LeadDetail({ lead, callLogs: initialCallLogs, users }: L
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-display font-bold text-ink mb-4">Assign Owner</h2>
-            <select
-              value={leadData.owner_id || ''}
-              onChange={(e) => handleOwnerChange(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none"
-            >
-              <option value="">Unassigned</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.full_name || user.email}
-                </option>
-              ))}
-            </select>
-          </div>
+          {currentUserRole === 'admin' ? (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-display font-bold text-ink mb-4">Assign Owner</h2>
+              <select
+                value={leadData.owner_id || ''}
+                onChange={(e) => handleOwnerChange(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rust focus:border-transparent outline-none bg-white text-ink"
+              >
+                <option value="">Unassigned</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.full_name || user.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-lg font-display font-bold text-ink mb-4">Lead Owner</h2>
+              {isUnassigned ? (
+                <div>
+                  <p className="text-sm text-ink/70 mb-4 font-sans leading-relaxed">
+                    This lead is currently unassigned. Claim it to log calls and update status.
+                  </p>
+                  <button
+                    onClick={() => handleOwnerChange(currentUserId || '')}
+                    className="w-full px-4 py-2.5 bg-rust text-white text-sm font-medium rounded-lg hover:bg-rust/95 active:scale-[0.98] transition-all font-sans shadow-md"
+                  >
+                    Claim Lead
+                  </button>
+                </div>
+              ) : isOwner ? (
+                <div>
+                  <p className="text-sm text-ink/70 mb-4 font-sans leading-relaxed">
+                    You own this lead. You can log call details, modify stages, or release assignment.
+                  </p>
+                  <button
+                    onClick={() => handleOwnerChange('')}
+                    className="w-full px-4 py-2.5 border border-sand/40 text-ink text-sm font-medium rounded-lg hover:bg-cream active:scale-[0.98] transition-all font-sans"
+                  >
+                    Release Assignment
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-ink/70 font-sans leading-relaxed">
+                    Assigned to: <strong className="text-ink font-semibold">{users.find((u) => u.id === leadData.owner_id)?.full_name || users.find((u) => u.id === leadData.owner_id)?.email || 'another agent'}</strong>
+                  </p>
+                  <p className="text-xs text-ink/50 mt-2 font-sans">
+                    Only the assigned owner or an administrator can modify this lead.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-lg font-display font-bold text-ink mb-4 flex items-center gap-2">
@@ -477,7 +536,7 @@ export default function LeadDetail({ lead, callLogs: initialCallLogs, users }: L
             </p>
             <button
               onClick={handleGenerateAiMessage}
-              disabled={isGeneratingMessage}
+              disabled={isGeneratingMessage || !canModify}
               className="w-full px-4 py-2 bg-olive text-white rounded-lg hover:bg-olive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4" />
