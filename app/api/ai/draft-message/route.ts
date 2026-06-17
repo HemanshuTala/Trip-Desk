@@ -1,11 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+const getAiClientAndModel = () => {
+  if (process.env.GROQ_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      }),
+      model: 'llama3-8b-8192',
+    }
+  }
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      }),
+      model: 'gpt-4o-mini',
+    }
+  }
+  return { client: null, model: '' }
+}
+
+const { client: aiClient, model: aiModel } = getAiClientAndModel()
 
 export async function POST(request: NextRequest) {
+  if (!aiClient) {
+    return NextResponse.json(
+      { error: 'AI API key not configured' },
+      { status: 501 }
+    )
+  }
+
   try {
     const { leadName, tripName, tripDestination, vibeDescription, groupType } = await request.json()
 
@@ -36,8 +62,8 @@ Guidelines for the message:
 
 The message should feel like it's from a real person at Nomichi who has read their enquiry and wants to start a genuine conversation.`
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const completion = await aiClient.chat.completions.create({
+      model: aiModel,
       messages: [
         {
           role: 'system',

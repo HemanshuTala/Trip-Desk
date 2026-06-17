@@ -17,7 +17,8 @@ const config: Config = {
         cream: "#FFFBF5",
       },
       fontFamily: {
-        sans: ["Poppins", "sans-serif"],
+        sans: ["var(--font-poppins)", "sans-serif"],
+        display: ["var(--font-playfair)", "serif"],
       },
     },
   },

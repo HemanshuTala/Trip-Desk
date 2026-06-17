@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { Trip, TripStatus } from '@/lib/types'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseBrowser } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { Plus, Edit, Trash2, Calendar, MapPin, Users, DollarSign } from 'lucide-react'
 
 interface TripManagementProps {
   trips: Trip[]
@@ -11,9 +12,12 @@ interface TripManagementProps {
 
 export default function TripManagement({ trips: initialTrips }: TripManagementProps) {
   const router = useRouter()
+  const supabase = getSupabaseBrowser()
   const [trips, setTrips] = useState(initialTrips)
   const [isCreating, setIsCreating] = useState(false)
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     destination: '',
@@ -42,6 +46,7 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSaving(true)
     try {
       const { error } = await supabase
         .from('trips')
@@ -69,12 +74,15 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
     } catch (error) {
       console.error('Error creating trip:', error)
       alert('Failed to create trip')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingTrip) return
+    setIsSaving(true)
 
     try {
       const { error } = await supabase
@@ -104,11 +112,14 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
     } catch (error) {
       console.error('Error updating trip:', error)
       alert('Failed to update trip')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this trip?')) return
+    setIsDeleting(id)
 
     try {
       const { error } = await supabase
@@ -123,6 +134,8 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
     } catch (error) {
       console.error('Error deleting trip:', error)
       alert('Failed to delete trip')
+    } finally {
+      setIsDeleting(null)
     }
   }
 
@@ -168,7 +181,7 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
 
       {(isCreating || editingTrip) && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold text-ink mb-4">
+          <h2 className="text-xl font-display font-bold text-ink mb-4">
             {isCreating ? 'Create New Trip' : 'Edit Trip'}
           </h2>
           <form onSubmit={isCreating ? handleCreate : handleUpdate} className="space-y-4">
@@ -298,14 +311,16 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors"
+                disabled={isSaving}
+                className="px-4 py-2 bg-rust text-white rounded-lg hover:bg-rust/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isCreating ? 'Create Trip' : 'Update Trip'}
+                {isSaving ? 'Saving...' : (isCreating ? 'Create Trip' : 'Update Trip')}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={isSaving}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -317,7 +332,15 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {trips.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-ink/70">No trips yet. Create your first trip.</p>
+            <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-ink/70 mb-2">No trips yet.</p>
+            <button
+              onClick={() => setIsCreating(true)}
+              className="text-rust hover:underline font-medium flex items-center gap-2 mx-auto"
+            >
+              <Plus className="w-4 h-4" />
+              Create your first trip
+            </button>
           </div>
         ) : (
           <table className="w-full">
@@ -374,15 +397,19 @@ export default function TripManagement({ trips: initialTrips }: TripManagementPr
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                     <button
                       onClick={() => startEdit(trip)}
-                      className="text-rust hover:underline font-medium mr-4"
+                      disabled={isSaving}
+                      className="text-rust hover:underline font-medium mr-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                     >
+                      <Edit className="w-4 h-4" />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(trip.id)}
-                      className="text-red-600 hover:underline font-medium"
+                      disabled={isDeleting === trip.id}
+                      className="text-red-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                     >
-                      Delete
+                      <Trash2 className="w-4 h-4" />
+                      {isDeleting === trip.id ? 'Deleting...' : 'Delete'}
                     </button>
                   </td>
                 </tr>

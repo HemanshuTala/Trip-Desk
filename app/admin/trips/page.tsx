@@ -1,8 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabaseServer } from '@/lib/supabase'
+import { cookies } from 'next/headers'
 import { Trip } from '@/lib/types'
 import TripManagement from '@/components/TripManagement'
+import { Map } from 'lucide-react'
 
-async function getTrips(): Promise<Trip[]> {
+async function getTrips(supabase: any): Promise<Trip[]> {
   const { data, error } = await supabase
     .from('trips')
     .select('*')
@@ -13,14 +15,19 @@ async function getTrips(): Promise<Trip[]> {
 }
 
 export default async function TripsPage() {
-  const trips = await getTrips()
+  const cookieStore = await cookies()
+  const supabase = getSupabaseServer(cookieStore)
+  const trips = await getTrips(supabase)
 
   return (
     <div className="min-h-screen bg-cream">
       <div className="container mx-auto px-4 py-8">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-ink">Trip Management</h1>
+            <h1 className="text-3xl font-display font-bold text-ink flex items-center gap-3">
+              <Map className="w-8 h-8 text-rust" />
+              Trip Management
+            </h1>
             <p className="text-ink/70">Create and manage trips</p>
           </div>
           <a

@@ -1,11 +1,39 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  let res = NextResponse.next({
+    request: {
+      headers: req.headers,
+    },
+  })
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return res
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return req.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value))
+        res = NextResponse.next({
+          request: {
+            headers: req.headers,
+          },
+        })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          res.cookies.set(name, value, options)
+        )
+      },
+    },
+  })
 
   const {
     data: { session },
@@ -23,7 +51,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/admin', req.url))
   }
 
-  return NextResponse.next()
+  return res
 }
 
 export const config = {

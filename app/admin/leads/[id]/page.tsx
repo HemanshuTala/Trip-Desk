@@ -1,8 +1,9 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabaseServer } from '@/lib/supabase'
+import { cookies } from 'next/headers'
 import { Lead, CallLog, UserProfile } from '@/lib/types'
 import LeadDetail from '@/components/LeadDetail'
 
-async function getLead(id: string): Promise<Lead | null> {
+async function getLead(supabase: any, id: string): Promise<Lead | null> {
   const { data, error } = await supabase
     .from('leads')
     .select('*, trip:trips(*)')
@@ -13,7 +14,7 @@ async function getLead(id: string): Promise<Lead | null> {
   return data
 }
 
-async function getCallLogs(leadId: string): Promise<CallLog[]> {
+async function getCallLogs(supabase: any, leadId: string): Promise<CallLog[]> {
   const { data, error } = await supabase
     .from('call_logs')
     .select('*')
@@ -24,7 +25,7 @@ async function getCallLogs(leadId: string): Promise<CallLog[]> {
   return data || []
 }
 
-async function getUsers(): Promise<UserProfile[]> {
+async function getUsers(supabase: any): Promise<UserProfile[]> {
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
@@ -35,9 +36,12 @@ async function getUsers(): Promise<UserProfile[]> {
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const lead = await getLead(id)
-  const callLogs = await getCallLogs(id)
-  const users = await getUsers()
+  const cookieStore = await cookies()
+  const supabase = getSupabaseServer(cookieStore)
+  
+  const lead = await getLead(supabase, id)
+  const callLogs = await getCallLogs(supabase, id)
+  const users = await getUsers(supabase)
 
   if (!lead) {
     return (

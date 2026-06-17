@@ -1,4 +1,3 @@
-import { supabaseAdmin } from '../lib/supabase'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 

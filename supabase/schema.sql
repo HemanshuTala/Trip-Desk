@@ -1,5 +1,6 @@
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- Create trips table
 CREATE TABLE trips (
@@ -38,7 +39,7 @@ CREATE TABLE call_logs (
   lead_id UUID NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
   notes TEXT NOT NULL,
   next_action TEXT,
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_by UUID DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -57,6 +58,11 @@ CREATE INDEX idx_leads_trip_id ON leads(trip_id);
 CREATE INDEX idx_leads_owner_id ON leads(owner_id);
 CREATE INDEX idx_call_logs_lead_id ON call_logs(lead_id);
 CREATE INDEX idx_trips_status ON trips(status);
+
+-- Create GIN trigram indexes for sub-millisecond wildcard text searches
+CREATE INDEX idx_leads_name_trgm ON leads USING gin (name gin_trgm_ops);
+CREATE INDEX idx_leads_email_trgm ON leads USING gin (email gin_trgm_ops);
+CREATE INDEX idx_leads_phone_trgm ON leads USING gin (phone gin_trgm_ops);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -85,6 +91,10 @@ CREATE POLICY "Public can view open trips"
   ON trips FOR SELECT
   USING (status = 'open');
 
+CREATE POLICY "Admins can view all trips"
+  ON trips FOR SELECT
+  USING (auth.role() = 'authenticated');
+
 CREATE POLICY "Admins can insert trips"
   ON trips FOR INSERT
   WITH CHECK (auth.role() = 'authenticated');
@@ -97,18 +107,30 @@ CREATE POLICY "Admins can delete trips"
   ON trips FOR DELETE
   USING (auth.role() = 'authenticated');
 
--- RLS Policies for leads (admin full access)
-CREATE POLICY "Admins can view leads"
+-- RLS Policies for leads (admin full access, owner can see own leads)
+CREATE POLICY "Admins can view all leads"
   ON leads FOR SELECT
   USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Owners can view own leads"
+  ON leads FOR SELECT
+  USING (auth.uid() = owner_id);
 
 CREATE POLICY "Admins can insert leads"
   ON leads FOR INSERT
   WITH CHECK (auth.role() = 'authenticated');
 
+CREATE POLICY "Anyone can insert leads"
+  ON leads FOR INSERT
+  WITH CHECK (true);
+
 CREATE POLICY "Admins can update leads"
   ON leads FOR UPDATE
   USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Owners can update own leads"
+  ON leads FOR UPDATE
+  USING (auth.uid() = owner_id);
 
 CREATE POLICY "Admins can delete leads"
   ON leads FOR DELETE
@@ -136,6 +158,10 @@ CREATE POLICY "Users can view own profile"
   ON user_profiles FOR SELECT
   USING (auth.uid() = id);
 
+CREATE POLICY "Authenticated users can view all profiles"
+  ON user_profiles FOR SELECT
+  USING (auth.role() = 'authenticated');
+
 CREATE POLICY "Users can insert own profile"
   ON user_profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
@@ -143,3 +169,31 @@ CREATE POLICY "Users can insert own profile"
 CREATE POLICY "Users can update own profile"
   ON user_profiles FOR UPDATE
   USING (auth.uid() = id);
+
+-- Trigger to automatically create a user profile when a user signs up
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, email, full_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- RPC function to calculate lead counts by status using DB-side grouping
+CREATE OR REPLACE FUNCTION get_lead_stats()
+RETURNS TABLE (status TEXT, count BIGINT) AS $$
+  SELECT status, count(*)
+  FROM public.leads
+  GROUP BY status;
+$$ LANGUAGE sql SECURITY DEFINER;
+
+

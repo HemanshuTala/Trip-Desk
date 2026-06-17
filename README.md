@@ -32,6 +32,9 @@ A web application for managing travel enquiries and trips for Nomichi, a communi
 ### Additional Features
 - Dashboard overview with key metrics
 - AI-assisted WhatsApp message drafting
+- Row-level security for owner-specific lead visibility
+- CSV export for leads
+- Activity timeline with visual design
 - Seed data for immediate testing
 
 ## Setup Instructions
@@ -123,47 +126,42 @@ Trip-Desk/
 
 The application will be live and ready to use.
 
-## API Routes
+## API Routes & AI Engine
 
-All database operations use Supabase client-side SDK. Server-side operations use the service role key for admin actions.
+- **API Routes**: Database interactions are direct via the Supabase client-side SDK utilizing SSR session sync.
+- **Dual AI Engine**: Built a robust server-side backend supporting both **Groq (Llama 3 8B)** and **OpenAI (GPT-4o-mini)**. If `GROQ_API_KEY` is present, it uses Groq's high-speed Llama model; otherwise, it falls back to OpenAI. If neither key is configured, it operates gracefully using local heuristics-based fallback logic (no crashes).
+- **AI Features**:
+  1. *WhatsApp Message Draft*: Custom prompt generates a warm, still introduction in the Nomichi voice based on traveler vibe.
+  2. *Vibe Fit Check*: Evaluates the traveler's hopes and month to suggest a match ("Fit", "Neutral", "Requires Call") with a one-line explanation.
+  3. *Call Log Summarizer*: Condenses logged call logs and touchpoints into a single-line status summary.
 
-## Security
+## Security & Database Architecture
 
-- Row Level Security (RLS) enabled on all tables
-- Admin routes protected by middleware
-- Service role key never exposed to client
-- Environment variables for all secrets
+- **Row Level Security (RLS)**: Active on all tables (`trips`, `leads`, `call_logs`, `user_profiles`).
+  - Added public SELECT policy on open trips, and authenticated select policy for admins to view all trips (including closed ones).
+  - Configured public INSERT policy on leads to allow public enquiry submission.
+  - Set owner-specific and authenticated-wide SELECT and UPDATE rules on leads.
+- **Postgres Database Trigger**: Configured an automatic PostgreSQL trigger on `auth.users` (`on_auth_user_created`) to sync newly registered users into the `user_profiles` table instantly.
+- **Self-attributing Call Logs**: Modified `call_logs` table schema to set `created_by` default to `auth.uid()`, attributing notes automatically to the logged-in team member.
+- **Client-side Conflict Mitigation**: Updated the signup flow to use `.upsert` to avoid unique key conflicts with the trigger.
 
-## Development Notes
+## Development & Typography Notes
 
-- The app uses Nomichi's brand voice: warm, honest, specific, still
-- No exclamation marks or em-dashes in product copy
-- Mobile-first design approach
-- AI features run server-side for security
-
-## What I Built
-
-This is a complete trip desk application that:
-- Allows travellers to browse trips and submit enquiries
-- Provides a full CRM for the Nomichi team to manage leads
-- Includes trip management as a CMS
-- Has a dashboard for quick overview
-- Includes AI-assisted WhatsApp message drafting
-- Is fully deployed and seeded with sample data
+- **Aesthetics & Branding**: Uses Nomichi brand colors (Rust `#D55D27`, Yellow `#FFFE00`, Ink `#1C1B1A`, Olive `#45471D`, Sand `#D1B788`, Cream `#FFFBF5`).
+- **Typography**: Display typography uses **Playfair Display** (`font-display`) and body text uses **Poppins** (`font-sans`), fully mapped in `tailwind.config.ts`.
+- **Editorial Voice**: Strict enforcement of the Nomichi brand voice rules (no exclamation marks, no em-dashes, no AI-isms like "unlock", "elevate", or "embark").
 
 ## Key Decisions
 
-1. **Database Schema**: Used proper relationships with foreign keys and RLS for security
-2. **Pipeline Status**: Implemented the exact pipeline stages specified in the brief
-3. **Brand Consistency**: Used exact brand colors and typography guidelines
-4. **AI Feature**: Chose WhatsApp message drafting as it provides immediate value
-5. **Seed Data**: Included realistic trips and leads for immediate testing
+1. **Database Schema Integrity**: Leveraged PostgreSQL triggers and defaults (e.g. `auth.uid()`) rather than client-side values to secure the data integrity.
+2. **Unified Cookie Auth**: Switched local storage auth clients to unified SSR cookie clients, allowing Next.js middleware and server routes to perform secure RLS queries.
+3. **Typography & Brand Alignment**: Mapped Google Fonts variables straight to Tailwind theme config for clean editorial style.
+4. **Resilient AI Mocking**: Configured standard local mocks for AI functions when keys are missing, allowing the codebase to build and run perfectly.
+5. **Team Note Attribution**: Replaced generic note attribution badges with dynamic member lookup to provide a genuine CRM experience.
 
 ## Future Improvements
 
-With more time, I would:
-- Add row-level security for owner-specific lead visibility
-- Implement CSV export for leads
-- Add activity timeline per lead
-- Enhance the dashboard with more metrics
-- Add email notifications for lead updates
+- Add email notification triggers on lead pipeline status changes (e.g., Vibe Check sent).
+- Create lead scoring based on vibe responses.
+- Implement live chat/WhatsApp webhook sync.
+- Design advanced dashboards with charts and conversion funnel analysis.

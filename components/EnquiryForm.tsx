@@ -3,13 +3,15 @@
 import { useState } from 'react'
 import { Trip } from '@/lib/types'
 import { GroupType } from '@/lib/types'
-import { supabase } from '@/lib/supabase'
+import { getSupabaseBrowser } from '@/lib/supabase'
+import { CheckCircle, AlertCircle, Send } from 'lucide-react'
 
 interface EnquiryFormProps {
   trips: Trip[]
 }
 
 export default function EnquiryForm({ trips }: EnquiryFormProps) {
+  const supabase = getSupabaseBrowser()
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -113,11 +115,9 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
     return (
       <div className="bg-white rounded-lg shadow-md p-8 text-center">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-ink mb-2">Thank you for your enquiry</h3>
+        <h3 className="text-xl font-display font-bold text-ink mb-2">Thank you for your enquiry</h3>
         <p className="text-ink/70 mb-6">
           We have received your enquiry and will get in touch with you soon.
         </p>
@@ -127,6 +127,14 @@ export default function EnquiryForm({ trips }: EnquiryFormProps) {
         >
           Send another enquiry
         </button>
+      </div>
+    )
+  }
+
+  if (trips.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-md p-8 text-center">
+        <p className="text-ink/70">No trips available to enquire about.</p>
       </div>
     )
   }

@@ -1,14 +1,16 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabaseServer } from '@/lib/supabase'
+import { cookies } from 'next/headers'
 import { Lead, Trip, LeadStatus } from '@/lib/types'
+import { LayoutDashboard, Users, Map, TrendingUp } from 'lucide-react'
 
-async function getDashboardStats() {
+async function getDashboardStats(supabase: any) {
   const [leadsResult, tripsResult] = await Promise.all([
     supabase.from('leads').select('*, trip:trips(*)'),
     supabase.from('trips').select('*'),
   ])
 
-  const leads = leadsResult.data || []
-  const trips = tripsResult.data || []
+  const leads = (leadsResult.data || []) as Lead[]
+  const trips = (tripsResult.data || []) as Trip[]
 
   const totalLeads = leads.length
   const leadsByStatus: Record<LeadStatus, number> = {
@@ -37,14 +39,16 @@ async function getDashboardStats() {
 }
 
 export default async function DashboardPage() {
-  const stats = await getDashboardStats()
+  const cookieStore = await cookies()
+  const supabase = getSupabaseServer(cookieStore)
+  const stats = await getDashboardStats(supabase)
 
   return (
     <div className="min-h-screen bg-cream">
       <div className="container mx-auto px-4 py-8">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-ink">Dashboard</h1>
+            <h1 className="text-3xl font-display font-bold text-ink">Dashboard</h1>
             <p className="text-ink/70">Overview of leads and trips</p>
           </div>
           <a
@@ -56,30 +60,30 @@ export default async function DashboardPage() {
         </header>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-sand">
             <h3 className="text-sm font-medium text-ink/70 mb-2">Total Leads</h3>
-            <p className="text-3xl font-bold text-ink">{stats.totalLeads}</p>
+            <p className="text-3xl font-display font-bold text-ink">{stats.totalLeads}</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-olive">
             <h3 className="text-sm font-medium text-ink/70 mb-2">New Leads</h3>
-            <p className="text-3xl font-bold text-blue-600">{stats.leadsByStatus.NEW}</p>
+            <p className="text-3xl font-display font-bold text-olive">{stats.leadsByStatus.NEW}</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-rust">
             <h3 className="text-sm font-medium text-ink/70 mb-2">Qualified</h3>
-            <p className="text-3xl font-bold text-green-600">{stats.leadsByStatus.QUALIFIED}</p>
+            <p className="text-3xl font-display font-bold text-rust">{stats.leadsByStatus.QUALIFIED}</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-ink">
             <h3 className="text-sm font-medium text-ink/70 mb-2">Confirmed</h3>
-            <p className="text-3xl font-bold text-emerald-600">{stats.leadsByStatus.CONFIRMED}</p>
+            <p className="text-3xl font-display font-bold text-ink">{stats.leadsByStatus.CONFIRMED}</p>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-ink mb-4">Leads by Pipeline Stage</h2>
+            <h2 className="text-xl font-display font-bold text-ink mb-4">Leads by Pipeline Stage</h2>
             <div className="space-y-3">
               {Object.entries(stats.leadsByStatus).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between">
@@ -91,7 +95,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-ink mb-4">Leads by Trip</h2>
+            <h2 className="text-xl font-display font-bold text-ink mb-4">Leads by Trip</h2>
             <div className="space-y-3">
               {stats.leadsByTrip.map((item) => (
                 <div key={item.tripName} className="flex items-center justify-between">
