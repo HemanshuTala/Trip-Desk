@@ -1,0 +1,23 @@
+# Netlify configuration for Trip-Desk (Next.js 15)
+# The @netlify/plugin-nextjs plugin enables full SSR, ISR, and API route support.
+# This resolves the "noindex.html" fallback shown during deployment on Netlify.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers (ported from the removed vercel.json)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
